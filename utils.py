@@ -1,5 +1,5 @@
-train_dir_0 = './dataset/0/train.txt'
-train_dir_1 = './dataset/1/train.txt'
+train_dir_0 = './dataset/train.txt'
+train_dir_1 = './dataset/train.txt'
 
 tag_list = {'O': 0, 'B-geo-loc': 1, 'B-facility': 2, 'I-facility': 3, 'B-movie': 4, 'I-movie': 5, 'B-company': 6,
             'B-product': 7, 'B-person': 8, 'B-other': 9, 'I-other': 10, 'B-sportsteam': 11, 'I-sportsteam': 12,
@@ -15,13 +15,12 @@ extra_tag = {'O': 'O', 'B-ORG': 'B-company', 'B-MISC': 'B-geo-loc', 'B-PER': 'B-
              'B-LOC': 'B-geo-loc', 'I-ORG': 'I-company', 'I-MISC': 'I-geo-loc', 'I-LOC': 'I-geo-loc'}
 
 create_new_model = True
-epoch = 80
+epoch = 64
 emb_size = 256
 hidden_size = 256
 batch_size = 64
 lr = 0.001
 print_step = 5
-
 import torch
 import os
 
@@ -48,17 +47,48 @@ def tensorize(batch, maps, tag):
     return batch_tensor, lengths
 
 
-def sort_by_lengths(word_lists, tag_lists):
-    pairs = list(zip(word_lists, tag_lists))
+# def tensorize_sub(batch, maps, tag):
+#     PAD = maps.get('<pad>')
+#     UNK = maps.get('<unk>')
+
+#     max_len = len(batch[0])
+#     batch_size = len(batch)
+
+#     batch_tensor = torch.ones(batch_size, max_len).long() * PAD
+#     for i, l in enumerate(batch):
+#         for j, e in enumerate(l):
+#             if tag:
+#                 batch_tensor[i][j] = maps.get(e, UNK)
+#             else:
+#                 batch_tensor[i][j] = maps.get(e.lower(), UNK)
+
+#     lengths = [len(l) for l in batch]
+
+#     return batch_tensor, lengths
+
+def sort_by_lengths(word_lists, tag_list):
+    pairs = list(zip(word_lists, tag_list))
     indices = sorted(range(len(pairs)),
-                     key=lambda k: len(pairs[k][0]),
-                     reverse=True)
+                    key=lambda k: len(pairs[k][0]),
+                    reverse=True)
     pairs = [pairs[i] for i in indices]
     # pairs.sort(key=lambda pair: len(pair[0]), reverse=True)
 
-    word_lists, tag_lists = list(zip(*pairs))
+    word_lists, tag_list = list(zip(*pairs))
 
-    return word_lists, tag_lists, indices
+    return word_lists,  tag_list, indices
+
+def sort_by_lengths_sub(word_lists):
+    pairs = list(word_lists)
+    indices = sorted(range(len(pairs)),
+                    key=lambda k: len(pairs[k]),
+                    reverse=True)
+    pairs = [pairs[i] for i in indices]
+    # pairs.sort(key=lambda pair: len(pair[0]), reverse=True)
+
+    word_lists = list(pairs)
+
+    return word_lists,  indices
 
 
 def get_file_list(file_path):

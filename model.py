@@ -45,11 +45,11 @@ class biLSTM(nn.Module):
                 val_losses += loss.item()
             val_loss = val_losses / val_step
 
-            if val_loss < self._best_val_loss:
-                print("Saving...")
-                with open('./saved_models/model_loss{:.4f}.model'.format(val_loss), 'wb') as model_file:
-                    pickle.dump(self, model_file)
-                self._best_val_loss = val_loss
+            # if val_loss < self._best_val_loss:
+            print("Saving...")
+            with open('./saved_models/model_loss{:.4f}.model'.format(val_loss), 'wb') as model_file:
+                pickle.dump(self, model_file)
+                # self._best_val_loss = val_loss
 
             return val_loss
 

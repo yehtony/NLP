@@ -1,7 +1,7 @@
 import os
 import pickle
 
-data_file = './dataset/1/train.txt'
+data_file = './dataset/train.txt'
 split_char = ' '
 
 if 'vocab.pkl' in os.listdir():
